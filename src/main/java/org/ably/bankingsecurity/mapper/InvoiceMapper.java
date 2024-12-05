@@ -17,8 +17,7 @@ public interface InvoiceMapper {
     InvoiceDTO toDTO(Invoice invoice);
 
 
-    @Mapping(target = "id", ignore = true)
-    @Mapping(target = "user", ignore = true)
+
     Invoice toEntity(InvoiceRequest invoiceRequest);
 
     List<InvoiceDTO> toDTOList(List<Invoice> bills);

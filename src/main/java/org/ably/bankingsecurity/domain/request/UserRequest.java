@@ -6,7 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
+import org.ably.bankingsecurity.domain.enums.Role;
 
 
 @Data
@@ -28,6 +28,9 @@ public class UserRequest {
     @Min(value = 300, message = "Credit score must be at least 300")
     @Max(value = 850, message = "Credit score cannot exceed 850")
     private int creditScore;
+
+    @NotBlank(message = "Role is required")
+    private Role role;
 
 
 }

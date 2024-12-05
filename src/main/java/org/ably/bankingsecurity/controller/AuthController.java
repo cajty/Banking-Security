@@ -44,7 +44,7 @@ public class AuthController {
             String jwtToken = jwtService.generateToken(authenticatedUser);
             LoginDTO loginResponse = new LoginDTO(
                     jwtToken,
-                    jwtService.getExpirationTime(),
+                    jwtService.getExpiration(),
                     userMapper.toDTO(authenticatedUser)
             );
             return ResponseEntity.ok(loginResponse);

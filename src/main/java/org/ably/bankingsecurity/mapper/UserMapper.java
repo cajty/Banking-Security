@@ -26,6 +26,7 @@ public interface UserMapper {
 
     User toEntity(UserRequest userRequest);
 
+
     List<UserDTO> toDTOList(List<User> users);
 
     @Named("mapAccountIds")

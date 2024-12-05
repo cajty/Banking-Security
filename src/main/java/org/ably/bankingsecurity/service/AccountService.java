@@ -5,12 +5,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.ably.bankingsecurity.domain.dto.AccountDTO;
 import org.ably.bankingsecurity.domain.entities.Account;
+import org.ably.bankingsecurity.domain.entities.User;
 import org.ably.bankingsecurity.domain.enums.AccountStatus;
 import org.ably.bankingsecurity.domain.request.AccountRequest;
 import org.ably.bankingsecurity.exception.account.AccountNotFoundException;
 import org.ably.bankingsecurity.exception.account.InsufficientBalanceException;
 import org.ably.bankingsecurity.mapper.AccountMapper;
 import org.ably.bankingsecurity.repository.AccountRepository;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,11 +26,17 @@ public class AccountService {
 
     private final AccountRepository accountRepository;
     private final AccountMapper accountMapper;
+    private final UserService userService;
 
     @Transactional
     public AccountDTO save(AccountRequest request) {
 
         Account account = accountMapper.toEntity(request);
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        account.setUser(
+                userService.findByEmail(username)
+        );
+
 
         account.setStatus(AccountStatus.ACTIVE);
 

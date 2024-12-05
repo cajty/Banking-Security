@@ -16,5 +16,5 @@ public class AccountRequest {
     @NotNull(message = "Balance is required")
     private Double balance;
 
-    private Long userId;
+
 }

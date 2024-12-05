@@ -8,6 +8,7 @@ import org.ably.bankingsecurity.domain.request.UserRequest;
 import org.ably.bankingsecurity.mapper.UserMapper;
 import org.ably.bankingsecurity.service.UserService;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -19,7 +20,8 @@ import static org.springframework.http.HttpStatus.OK;
 @RestController
 @RequestMapping("/api/user")
 @AllArgsConstructor
-@Tag(name = "User Controller", description = "User management APIs")  // Added this line
+@Tag(name = "User Controller", description = "User management APIs")
+@PreAuthorize("hasRole('ADMIN')")
 public class UserController {
 
     private final UserService userService;

@@ -17,7 +17,7 @@ public interface AccountMapper {
     AccountDTO toDTO(Account account);
 
 
-    @Mapping(target = "user.id", source = "userId")
+
     Account toEntity(AccountRequest accountRequest);
 
     List<AccountDTO> toDTOList(List<Account> accounts);

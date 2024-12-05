@@ -6,6 +6,7 @@ import org.ably.bankingsecurity.domain.entities.Invoice;
 import org.ably.bankingsecurity.domain.request.InvoiceRequest;
 import org.ably.bankingsecurity.mapper.InvoiceMapper;
 import org.ably.bankingsecurity.repository.InvoiceRepository;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,9 +18,14 @@ public class InvoiceService {
 
     private final InvoiceRepository invoiceRepository;
     private final InvoiceMapper invoiceMapper;
+    private final UserService userService;
 
     public Invoice save(InvoiceRequest invoiceRequest) {
         Invoice invoice = invoiceMapper.toEntity(invoiceRequest);
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        invoice.setUser(
+                userService.findByEmail(email)
+                );
         return invoiceRepository.save(invoice);
     }
 

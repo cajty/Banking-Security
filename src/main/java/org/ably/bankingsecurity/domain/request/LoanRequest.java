@@ -24,7 +24,4 @@ public class LoanRequest {
     @Min(value = 100, message = "Amount must be at least 100")
     private Double mouthlyPayment;
 
-
-    @NotNull(message = "User ID cannot be null")
-    private Long userId;
 }

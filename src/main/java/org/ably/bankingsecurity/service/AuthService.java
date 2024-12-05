@@ -9,12 +9,13 @@ import org.ably.bankingsecurity.mapper.UserMapper;
 import org.ably.bankingsecurity.repository.UserRepository;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-
-
-
+import java.util.Collections;
+import java.util.List;
 
 
 @Service
@@ -29,25 +30,24 @@ public class AuthService {
 
 
 
-    public User signup(RegisterRequest input) {
-        User user = userMapper.toRegisterRequest(input);
+    public User signup(RegisterRequest request) {
+        User user = userMapper.toRegisterRequest(request);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        user.setRole(Role.ADMIN);
+
+
         return userRepository.save(user);
     }
 
-    public User authenticate(LoginRequest input) {
-        User user = userRepository.findByEmail(input.getEmail())
-                .orElseThrow(() -> new RuntimeException("User not found with email: " + input.getEmail()));
-
-
+    public User authenticate(LoginRequest request) {
 
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        input.getEmail(),
-                        input.getPassword()
+                        request.getEmail(),
+                        request.getPassword()
                 )
         );
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new RuntimeException("User not found with email: " + request.getEmail()));
 
         return user;
     }

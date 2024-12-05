@@ -27,6 +27,5 @@ public class InvoiceRequest {
     @Positive(message = "termMonths must be a positive value")
     private int termMonths;
 
-    @NotNull(message = "User ID cannot be null")
-    private Long userId;
+
 }
