@@ -1,0 +1,53 @@
+package org.ably.bankingsecurity.service;
+
+import org.ably.bankingsecurity.domain.entities.User;
+import org.ably.bankingsecurity.domain.request.UserRequest;
+import org.ably.bankingsecurity.mapper.UserMapper;
+import org.ably.bankingsecurity.repository.UserRepository;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+
+
+@Service
+public class UserService  {
+
+    private final UserRepository  userRepository;
+    private final UserMapper userMapper;
+
+
+    public UserService(UserRepository userRepository, UserMapper userMapper) {
+        this.userRepository = userRepository;
+        this.userMapper = userMapper;
+    }
+
+
+
+
+    public List<User> findAll() {
+        return  userRepository.findAll();
+    }
+
+
+
+
+    public User findById(Long id) {
+        return userRepository.findById(id).orElseThrow(()
+        -> new RuntimeException("User not found with id " + id));
+    }
+
+
+    public User save(UserRequest request) {
+        User user = userMapper.toEntity(request);
+        return   userRepository.save(user);
+    }
+
+
+
+
+
+    public void delete(Long id) {userRepository.deleteById(id);}
+
+
+}

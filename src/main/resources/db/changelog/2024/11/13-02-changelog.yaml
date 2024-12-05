@@ -1,0 +1,13 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1731534048354-1
+      author: YouCode
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - addColumn:
+            columns:
+              - column:
+                  name: created_at
+                  type: DATE
+            tableName: users
+

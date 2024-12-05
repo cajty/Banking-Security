@@ -1,0 +1,38 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1731529786805-1
+      author: YouCode
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - addColumn:
+            columns:
+              - column:
+                  name: approved_by_user_id
+                  type: BIGINT
+              - column:
+                  name: monthly_payment
+                  type: DOUBLE
+            tableName: loans
+  - changeSet:
+      id: 1731529786805-3
+      author: YouCode
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - addColumn:
+            columns:
+              - column:
+                  name: status
+                  type: SMALLINT
+            tableName: accounts
+  - changeSet:
+      id: 1731529786805-4
+      author: YouCode
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: approved_by_user_id
+            baseTableName: loans
+            constraintName: FK_LOANS_ON_APPROVED_BY_USER
+            referencedColumnNames: id
+            referencedTableName: users
+
