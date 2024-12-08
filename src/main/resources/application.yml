@@ -42,7 +42,7 @@ spring:
 
   security:
     jwt:
-      expiration-time: 86400000
+      expiration-time: 8640000000000000
       secret-key: "Your32CharacterLongBase64EncodedSecretKeydvererberbbe"
 
 

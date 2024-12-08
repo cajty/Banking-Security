@@ -8,6 +8,7 @@ import org.ably.bankingsecurity.domain.request.AccountRequest;
 import org.ably.bankingsecurity.mapper.AccountMapper;
 import org.ably.bankingsecurity.service.AccountService;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -25,6 +26,8 @@ public class AccountController {
     private final AccountService AccountService;
     private final AccountMapper accountMapper;
 
+
+    //@PreAuthorize("hasRole('USER')")
     @Operation(summary = "Create new account")
     @PostMapping("/add")
     @ResponseStatus(HttpStatus.CREATED)
@@ -40,7 +43,7 @@ public class AccountController {
 
 
 
-
+    @PreAuthorize("hasAnyRole('USER','ADMIN','EMPLOYEE')")
     @Operation(summary = "Get all accounts")
     @GetMapping("/")
     public List<AccountDTO> findAll() {

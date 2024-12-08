@@ -29,7 +29,7 @@ public class UserRequest {
     @Max(value = 850, message = "Credit score cannot exceed 850")
     private int creditScore;
 
-    @NotBlank(message = "Role is required")
+    @NotBlank
     private Role role;
 
 

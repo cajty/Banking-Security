@@ -15,6 +15,7 @@ import javax.validation.Valid;
 import java.util.List;
 
 import static org.springframework.http.HttpStatus.OK;
+import static org.springframework.security.authorization.AuthorityAuthorizationManager.hasRole;
 
 
 @RestController

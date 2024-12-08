@@ -1,6 +1,7 @@
 package org.ably.bankingsecurity.service;
 
 import lombok.RequiredArgsConstructor;
+import org.ably.bankingsecurity.domain.dto.LoginDTO;
 import org.ably.bankingsecurity.domain.entities.User;
 import org.ably.bankingsecurity.domain.enums.Role;
 import org.ably.bankingsecurity.domain.request.LoginRequest;
@@ -8,6 +9,7 @@ import org.ably.bankingsecurity.domain.request.RegisterRequest;
 import org.ably.bankingsecurity.mapper.UserMapper;
 import org.ably.bankingsecurity.repository.UserRepository;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -26,6 +28,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final UserMapper userMapper;
     private final AuthenticationManager authenticationManager;
+    private final JwtService jwtService;
 
 
 
@@ -38,18 +41,24 @@ public class AuthService {
         return userRepository.save(user);
     }
 
-    public User authenticate(LoginRequest request) {
+    public LoginDTO authenticate(LoginRequest request) {
 
-        authenticationManager.authenticate(
+        User user = (User) authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.getEmail(),
                         request.getPassword()
                 )
-        );
-        User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new RuntimeException("User not found with email: " + request.getEmail()));
+        ).getPrincipal();
 
-        return user;
+
+        String jwtToken = jwtService.generateToken(user);
+        LoginDTO loginResponse = new LoginDTO(
+                jwtToken,
+                jwtService.getExpiration(),
+                userMapper.toDTO(user) );
+
+
+        return loginResponse;
     }
 
 

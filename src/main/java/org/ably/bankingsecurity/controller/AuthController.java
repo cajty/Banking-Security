@@ -28,7 +28,7 @@ public class AuthController {
 
     private final UserMapper userMapper;
 
-    private final JwtService jwtService;
+
 
     @Operation
     @PostMapping("/signup")
@@ -40,14 +40,7 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<LoginDTO> authenticate(@RequestBody LoginRequest loginUserDto) {
         try {
-            User authenticatedUser = authService.authenticate(loginUserDto);
-            String jwtToken = jwtService.generateToken(authenticatedUser);
-            LoginDTO loginResponse = new LoginDTO(
-                    jwtToken,
-                    jwtService.getExpiration(),
-                    userMapper.toDTO(authenticatedUser)
-            );
-            return ResponseEntity.ok(loginResponse);
+            return ResponseEntity.ok(authService.authenticate(loginUserDto));
         } catch (Exception e) {
 
             e.printStackTrace();
@@ -57,6 +50,12 @@ public class AuthController {
                     .status(HttpStatus.UNAUTHORIZED)
                     .body(new LoginDTO("Token generation failed", 0, null));
         }
+
+     
+
+
+
+
     }
 
 

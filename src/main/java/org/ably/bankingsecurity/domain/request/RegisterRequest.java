@@ -40,9 +40,7 @@ public class RegisterRequest {
     @Min(value = 0)
     private int creditScore;
 
-    @NotBlank
-    @Size(min = 8, max = 30)
-    private String username;
+
 
     private Role role = Role.USER;
 
