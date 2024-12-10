@@ -3,7 +3,6 @@ package org.ably.bankingsecurity.mapper;
 import org.ably.bankingsecurity.domain.dto.UserDTO;
 import org.ably.bankingsecurity.domain.entities.*;
 import org.ably.bankingsecurity.domain.request.RegisterRequest;
-import org.ably.bankingsecurity.domain.request.UserRequest;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
@@ -24,7 +23,7 @@ public interface UserMapper {
 
 
 
-    User toEntity(UserRequest userRequest);
+    User toEntity(RegisterRequest registerRequest);
 
 
     List<UserDTO> toDTOList(List<User> users);

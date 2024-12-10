@@ -19,7 +19,7 @@ import java.util.List;
 import static org.springframework.http.HttpStatus.OK;
 
 @RestController
-@RequestMapping("/api/transaction")
+@RequestMapping("/transaction")
 @Tag(name = "Transaction Controller", description = "Transaction management APIs")
 @AllArgsConstructor
 public class TransactionController {

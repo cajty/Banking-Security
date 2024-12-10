@@ -44,6 +44,31 @@ spring:
     jwt:
       expiration-time: 8640000000000000
       secret-key: "Your32CharacterLongBase64EncodedSecretKeydvererberbbe"
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8080/realms/bank-app
+          jwk-set-uri: ${spring.security.oauth2.resourceserver.jwt.issuer-uri}/protocol/openid-connect/certs
+
+
+
+  server:
+    port: 8081
+    servlet:
+      context-path: /api/v1
+
+keycloak:
+  realm: "bank-app"
+  client-id: "8bafe87f-4c50-41d8-b767-e19f71514399"
+  resource: banking_security_application
+  auth-server-url: http://localhost:8080
+  public-client: true
+  credentials:
+    secret: "eyJhbGciOiJIUzUxMiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJmYjk0YjI0ZC1kYjYzLTRjZTMtODE0Yi0yZWZlNDk5YTg4ZmEifQ.eyJleHAiOjE3NDI0NjQ4OTgsImlhdCI6MTczMzgyNDg5OCwianRpIjoiOGJhZmU4N2YtNGM1MC00MWQ4LWI3NjctZTE5ZjcxNTE0Mzk5IiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwL3JlYWxtcy9iYW5rLWFwcCIsImF1ZCI6Imh0dHA6Ly9sb2NhbGhvc3Q6ODA4MC9yZWFsbXMvYmFuay1hcHAiLCJ0eXAiOiJJbml0aWFsQWNjZXNzVG9rZW4ifQ.Ml8x8sZJx328VLyzFM84zX3bA5ES_HZcWvxbv66s-qEBuBwt_8k6Dbp6Vc1q-jP6f2yVYjJ0hk1XvL6vuNtEyA"
+
+
+server:
+    port: 8081
 
 
 logging:

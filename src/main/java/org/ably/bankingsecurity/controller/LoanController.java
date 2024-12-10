@@ -17,7 +17,7 @@ package org.ably.bankingsecurity.controller;//package org.ably.bankinge.controll
 //import static org.springframework.http.HttpStatus.OK;
 //
 //@RestController
-//@RequestMapping("/api/loan")
+//@RequestMapping("/loan")
 //@Tag(name = "Loan Controller", description = "Loan management APIs")
 //@AllArgsConstructor
 //public class LoanController {

@@ -1,7 +1,7 @@
 package org.ably.bankingsecurity.service;
 
 import org.ably.bankingsecurity.domain.entities.User;
-import org.ably.bankingsecurity.domain.request.UserRequest;
+import org.ably.bankingsecurity.domain.request.RegisterRequest;
 import org.ably.bankingsecurity.mapper.UserMapper;
 import org.ably.bankingsecurity.repository.UserRepository;
 import org.springframework.stereotype.Service;
@@ -38,7 +38,7 @@ public class UserService  {
     }
 
 
-    public User save(UserRequest request) {
+    public User save(RegisterRequest request) {
         User user = userMapper.toEntity(request);
         return   userRepository.save(user);
     }

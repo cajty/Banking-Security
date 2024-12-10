@@ -18,7 +18,7 @@ import java.util.UUID;
 import static org.springframework.http.HttpStatus.OK;
 
 @RestController
-@RequestMapping("/api/account")
+@RequestMapping("/account")
 @Tag(name = "Account Controller", description = "Account management APIs")
 @AllArgsConstructor
 public class AccountController {

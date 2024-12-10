@@ -27,6 +27,7 @@ public class RegisterRequest {
 
 
     @NotBlank(message = "Email is required")
+    @Email(message = "Email should be valid")
     private String email;
 
     @Max(value = 80)
