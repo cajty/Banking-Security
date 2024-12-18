@@ -4,13 +4,29 @@ spring:
     username: sonar
     password: sonar
     driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 5
+      idle-timeout: 300000
+      connection-timeout: 20000
+      max-lifetime: 1200000
 
   jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    show-sql: true
     properties:
       hibernate:
+        format_sql: true
         dialect: org.hibernate.dialect.PostgreSQLDialect
+        jdbc:
+          lob:
+            non_contextual_creation: true
     hibernate:
       ddl-auto: update
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    generate-ddl: true
+    open-in-view: false
 
   liquibase:
     change-log: classpath:db/migration/changelog.yml
@@ -19,7 +35,7 @@ spring:
     drop-first: false
 
   elasticsearch:
-    uris: ${ELASTICSEARCH_URI:elasticsearch:9200}
+    uris: http://elasticsearch:9200
     connection-timeout: 5s
     socket-timeout: 30s
     username:
@@ -48,3 +64,9 @@ logging:
     org:
       springframework:
         security: DEBUG
+      hibernate:
+        SQL: DEBUG
+        type:
+          descriptor:
+            sql:
+              BasicBinder: TRACE

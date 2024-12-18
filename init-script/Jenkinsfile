@@ -16,7 +16,7 @@ pipeline {
                     deleteDir() // Clean workspace
                     echo "Cloning Git repository..."
                     sh '''
-                        git clone https://github.com/cajty/Banking-Security.git
+                        git clone -b Jenkins https://github.com/cajty/Banking-Security.git
                         echo "Repository cloned successfully."
                     '''
                 }
