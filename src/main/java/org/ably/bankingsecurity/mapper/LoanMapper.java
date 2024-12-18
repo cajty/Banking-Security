@@ -20,7 +20,7 @@ public interface LoanMapper {
     @Mapping(target = "approved", source = "approved")
     LoanDTO toDTO(Loan loan);
 
-    @Mapping(target = "user.id", source = "userId")
+
     @Mapping(target = "principal", source = "amount")
     @Mapping(target = "monthlyPayment", source = "mouthlyPayment")
     Loan toEntity(LoanRequest loanRequest);

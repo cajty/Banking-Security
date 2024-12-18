@@ -18,11 +18,11 @@ import java.util.function.Function;
 
 @Service
 public class JwtService {
-    @Value("${spring.security.jwt.secret-key}")
-    private String secretKey;
+//    @Value("${spring.security.jwt.secret-key}")
+    private String secretKey = "Your32CharacterLongBase64EncodedSecretKeydvererberbbe";
 
-    @Value("${spring.security.jwt.expiration-time}")
-    private long jwtExpiration;
+//    @Value("${spring.security.jwt.expiration-time}")
+    private final long jwtExpiration = 864000000;
 
     public String generateToken(User user) {
         Map<String, Object> extraClaims = new HashMap<>();
