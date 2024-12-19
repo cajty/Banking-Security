@@ -1,32 +1,13 @@
 services:
-  maven:
-    image: maven:3.9-eclipse-temurin-17
-    container_name: CI_CD_maven
-    volumes:
-      - .:/app
-      - maven_cache:/root/.m2
-    working_dir: /app
-    command: mvn clean install
-    environment:
-      - MAVEN_CONFIG=/root/.m2
-    networks:
-      - infra-network
-
   db:
     image: postgres:15
     container_name: CI_CD_postgres
     ports:
-      - "5432:5432"
+      - "5433:5433"
     environment:
       - POSTGRES_USER=admin
       - POSTGRES_PASSWORD=admin
-      - POSTGRES_MULTIPLE_DATABASES=dev-bank-db,sonar
-    command: >
-      bash -c "
-        echo \"CREATE DATABASE sonar;\" > /docker-entrypoint-initdb.d/init.sql &&
-        echo \"CREATE DATABASE dev_bank_db;\" >> /docker-entrypoint-initdb.d/init.sql &&
-        docker-entrypoint.sh postgres
-      "
+      - POSTGRES_DB=sonar
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -37,32 +18,13 @@ services:
     networks:
       - infra-network
 
-  elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:8.8.0
-    container_name: CI_CD_elasticsearch
-    environment:
-      - discovery.type=single-node
-      - xpack.security.enabled=false
-      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-    ports:
-      - "9200:9200"
-    volumes:
-      - elasticsearch_data:/usr/share/elasticsearch/data
-    healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:9200 || exit 1"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-    networks:
-      - infra-network
-
   sonarqube:
     image: sonarqube:9.9.2-community
     container_name: CI_CD_sonarqube
     ports:
       - "9001:9000"
     environment:
-      - SONAR_JDBC_URL=jdbc:postgresql://db:5432/sonar
+      - SONAR_JDBC_URL=jdbc:postgresql://db:5433/sonar
       - SONAR_JDBC_USERNAME=admin
       - SONAR_JDBC_PASSWORD=admin
       - SONAR_ES_BOOTSTRAP_CHECKS_DISABLE=true
@@ -114,9 +76,7 @@ networks:
 
 volumes:
   postgres_data:
-  elasticsearch_data:
   sonarqube_data:
   sonarqube_extensions:
   sonarqube_logs:
   jenkins_home:
-  maven_cache:

@@ -3,13 +3,14 @@ pipeline {
 
     tools {
         maven 'Maven'
+        jdk 'JDK17'
     }
 
     environment {
         DOCKER_IMAGE = 'banking-system'
         DOCKER_TAG = "${BUILD_NUMBER}"
         SONAR_TOKEN = credentials('sonar-token')
-        MAVEN_OPTS = '-Dorg.gradle.daemon=false'
+
     }
 
     stages {
@@ -63,7 +64,9 @@ pipeline {
             steps {
                 script {
                     try {
-                        sh 'mvn clean package -DskipTests'
+                        steps {
+                                sh 'mvn clean install'
+                            }
                     } catch (Exception e) {
                         error "Build failed: ${e.getMessage()}"
                     }
@@ -75,7 +78,9 @@ pipeline {
             steps {
                 script {
                     try {
-                        sh 'mvn test'
+                        withMaven(maven: 'Maven') {
+                            sh 'mvn test'
+                        }
                     } catch (Exception e) {
                         error "Unit tests failed: ${e.getMessage()}"
                     }
@@ -98,13 +103,15 @@ pipeline {
                 script {
                     try {
                         withSonarQubeEnv('SonarQube') {
-                            sh '''
-                                mvn sonar:sonar \
-                                -Dsonar.projectKey=banking-system \
-                                -Dsonar.projectName=BankingSystem \
-                                -Dsonar.host.url=http://sonarqube:9000 \
-                                -Dsonar.login=${SONAR_TOKEN}
-                            '''
+                            withMaven(maven: 'Maven') {
+                                sh '''
+                                    mvn sonar:sonar \
+                                    -Dsonar.projectKey=banking-system \
+                                    -Dsonar.projectName=BankingSystem \
+                                    -Dsonar.host.url=http://sonarqube:9000 \
+                                    -Dsonar.login=${SONAR_TOKEN}
+                                '''
+                            }
                         }
                         timeout(time: 2, unit: 'MINUTES') {
                             waitForQualityGate abortPipeline: true
@@ -116,35 +123,10 @@ pipeline {
             }
         }
 
-        stage('Build Docker Image') {
-            steps {
-                script {
-                    try {
-                        docker.build("${DOCKER_IMAGE}:${DOCKER_TAG}")
-                        docker.build("${DOCKER_IMAGE}:latest")
-                    } catch (Exception e) {
-                        error "Docker build failed: ${e.getMessage()}"
-                    }
-                }
-            }
-        }
-
         stage('Manual Approval') {
             steps {
                 timeout(time: 5, unit: 'MINUTES') {
                     input message: 'Deploy to production?', ok: 'Proceed'
-                }
-            }
-        }
-
-        stage('Deploy') {
-            steps {
-                script {
-                    try {
-                        docker.image("${DOCKER_IMAGE}:${DOCKER_TAG}").run('-p 8081:8080')
-                    } catch (Exception e) {
-                        error "Deployment failed: ${e.getMessage()}"
-                    }
                 }
             }
         }
