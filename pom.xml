@@ -17,12 +17,13 @@
     <properties>
         <java.version>17</java.version>
         <sonar.host.url>http://localhost:9001</sonar.host.url>
-        <sonar.login>sqa_19e744a24c80ace9afb7e9e05a11b508c607fead</sonar.login> <!-- Replace with your token after generating it -->
-        <sonar.java.source>17</sonar.java.source>
+        <sonar.login>sqa_b437d1655ddf3c58937dcbfe4b9a0f67d61bd783</sonar.login>
         <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
         <sonar.coverage.jacoco.xmlReportPaths>${project.build.directory}/site/jacoco/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
         <sonar.language>java</sonar.language>
         <sonar.sourceEncoding>UTF-8</sonar.sourceEncoding>
+        <sonar.exclusions>**/target/**/*</sonar.exclusions>
+        <sonar.java.binaries>${project.build.directory}/classes</sonar.java.binaries>
     </properties>
 
     <dependencies>
@@ -115,11 +116,6 @@
             <artifactId>spring-security-test</artifactId>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>org.jacoco</groupId>
-            <artifactId>jacoco-maven-plugin</artifactId>
-            <version>0.8.12</version>
-        </dependency>
     </dependencies>
 
     <build>
@@ -130,11 +126,19 @@
                 <artifactId>sonar-maven-plugin</artifactId>
                 <version>3.9.1.2184</version>
             </plugin>
-            <!-- JaCoCo for code coverage -->
+
+            <!-- JaCoCo Plugin -->
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <version>0.8.8</version>
+                <configuration>
+                    <excludes>
+                        <exclude>**/domain/entities/**/*</exclude>
+                        <exclude>**/domain/request/**/*</exclude>
+                        <exclude>**/config/**/*</exclude>
+                    </excludes>
+                </configuration>
                 <executions>
                     <execution>
                         <id>prepare-agent</id>
@@ -144,13 +148,35 @@
                     </execution>
                     <execution>
                         <id>report</id>
-                        <phase>prepare-package</phase>
                         <goals>
                             <goal>report</goal>
                         </goals>
+                        <phase>test</phase>
+                    </execution>
+                    <execution>
+                        <id>check</id>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <rule>
+                                    <element>BUNDLE</element>
+                                    <limits>
+                                        <limit>
+                                            <counter>INSTRUCTION</counter>
+                                            <value>COVEREDRATIO</value>
+                                            <minimum>0.80</minimum>
+                                        </limit>
+                                    </limits>
+                                </rule>
+                            </rules>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
+
+            <!-- Spring Boot Maven Plugin -->
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>

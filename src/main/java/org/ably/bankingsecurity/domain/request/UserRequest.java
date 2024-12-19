@@ -21,6 +21,10 @@ public class UserRequest {
     @Min(value = 18, message = "Age must be at least 18")
     private int age;
 
+    @Email(message = "Email should be valid")
+    @NotBlank(message = "Email is required")
+    private String email;
+
     @NotNull(message = "Monthly income is required")
     @PositiveOrZero(message = "Monthly income cannot be negative")
     private Double monthlyIncome;

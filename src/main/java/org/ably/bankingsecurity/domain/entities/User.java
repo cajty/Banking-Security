@@ -1,10 +1,7 @@
 package org.ably.bankingsecurity.domain.entities;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.ably.bankingsecurity.domain.enums.Role;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -17,7 +14,8 @@ import java.util.List;
 
 
 
-@Data
+@Getter
+@Setter
 @Entity
 @Table(name = "users")
 @AllArgsConstructor
@@ -62,5 +60,6 @@ public class User  implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
+
 
 }

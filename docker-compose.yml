@@ -18,13 +18,19 @@ services:
     ports:
       - "5432:5432"
     environment:
-      - POSTGRES_DB=sonar
-      - POSTGRES_USER=sonar
-      - POSTGRES_PASSWORD=sonar
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=admin
+      - POSTGRES_MULTIPLE_DATABASES=dev-bank-db,sonar
+    command: >
+      bash -c "
+        echo \"CREATE DATABASE sonar;\" > /docker-entrypoint-initdb.d/init.sql &&
+        echo \"CREATE DATABASE dev_bank_db;\" >> /docker-entrypoint-initdb.d/init.sql &&
+        docker-entrypoint.sh postgres
+      "
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U sonar"]
+      test: ["CMD-SHELL", "pg_isready -U admin"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -57,8 +63,8 @@ services:
       - "9001:9000"
     environment:
       - SONAR_JDBC_URL=jdbc:postgresql://db:5432/sonar
-      - SONAR_JDBC_USERNAME=sonar
-      - SONAR_JDBC_PASSWORD=sonar
+      - SONAR_JDBC_USERNAME=admin
+      - SONAR_JDBC_PASSWORD=admin
       - SONAR_ES_BOOTSTRAP_CHECKS_DISABLE=true
     volumes:
       - sonarqube_data:/opt/sonarqube/data

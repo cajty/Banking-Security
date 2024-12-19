@@ -1,54 +1,85 @@
 pipeline {
     agent any
+
     tools {
         maven 'Maven'
     }
+
     environment {
         DOCKER_IMAGE = 'banking-system'
         DOCKER_TAG = "${BUILD_NUMBER}"
         SONAR_TOKEN = credentials('sonar-token')
         MAVEN_OPTS = '-Dorg.gradle.daemon=false'
     }
+
     stages {
         stage('Checkout') {
             steps {
                 script {
-                    deleteDir() // Clean workspace
-                    echo "Cloning Git repository..."
-                    sh '''
-                        git clone -b Jenkins https://github.com/cajty/Banking-Security.git
+                    try {
+                        deleteDir()
+                        echo "Cloning Git repository..."
+                        checkout([$class: 'GitSCM',
+                            branches: [[name: '*/Jenkins']],
+                            userRemoteConfigs: [[
+                                url: 'https://github.com/cajty/Banking-Security.git'
+                            ]]
+                        ])
                         echo "Repository cloned successfully."
-                    '''
+                    } catch (Exception e) {
+                        error "Failed to clone repository: ${e.getMessage()}"
+                    }
                 }
             }
         }
+
         stage('Environment Check') {
             steps {
-                sh '''
-                    echo "Git version:"
-                    git --version
-                    echo "Current Git branch:"
-                    git branch --show-current
-                    echo "Git status:"
-                    git status
-                    echo "Java version:"
-                    java -version
-                    echo "Maven version:"
-                    mvn -version
-                    echo "Working directory contents:"
-                    pwd
-                    ls -la
-                '''
+                script {
+                    try {
+                        sh '''
+                            echo "Git version:"
+                            git --version
+                            echo "Current Git branch:"
+                            git branch --show-current
+                            echo "Git status:"
+                            git status
+                            echo "Java version:"
+                            java -version
+                            echo "Maven version:"
+                            mvn -version
+                            echo "Working directory contents:"
+                            pwd
+                            ls -la
+                        '''
+                    } catch (Exception e) {
+                        error "Environment check failed: ${e.getMessage()}"
+                    }
+                }
             }
         }
+
         stage('Build') {
             steps {
-                sh 'mvn clean package -DskipTests'
+                script {
+                    try {
+                        sh 'mvn clean package -DskipTests'
+                    } catch (Exception e) {
+                        error "Build failed: ${e.getMessage()}"
+                    }
+                }
             }
         }
+
         stage('Unit Tests') {
             steps {
-                sh 'mvn test'
+                script {
+                    try {
+                        sh 'mvn test'
+                    } catch (Exception e) {
+                        error "Unit tests failed: ${e.getMessage()}"
+                    }
+                }
             }
             post {
                 always {
@@ -61,30 +92,43 @@ pipeline {
                 }
             }
         }
+
         stage('Code Quality Analysis') {
             steps {
-                withSonarQubeEnv('SonarQube') {
-                    sh '''
-                        mvn sonar:sonar \
-                        -Dsonar.projectKey=banking-system \
-                        -Dsonar.projectName=BankingSystem \
-                        -Dsonar.host.url=http://sonarqube:9000 \
-                        -Dsonar.login=${SONAR_TOKEN}
-                    '''
-                }
-                timeout(time: 2, unit: 'MINUTES') {
-                    waitForQualityGate abortPipeline: true
+                script {
+                    try {
+                        withSonarQubeEnv('SonarQube') {
+                            sh '''
+                                mvn sonar:sonar \
+                                -Dsonar.projectKey=banking-system \
+                                -Dsonar.projectName=BankingSystem \
+                                -Dsonar.host.url=http://sonarqube:9000 \
+                                -Dsonar.login=${SONAR_TOKEN}
+                            '''
+                        }
+                        timeout(time: 2, unit: 'MINUTES') {
+                            waitForQualityGate abortPipeline: true
+                        }
+                    } catch (Exception e) {
+                        error "Code quality analysis failed: ${e.getMessage()}"
+                    }
                 }
             }
         }
+
         stage('Build Docker Image') {
             steps {
                 script {
-                    docker.build("${DOCKER_IMAGE}:${DOCKER_TAG}")
-                    docker.build("${DOCKER_IMAGE}:latest")
+                    try {
+                        docker.build("${DOCKER_IMAGE}:${DOCKER_TAG}")
+                        docker.build("${DOCKER_IMAGE}:latest")
+                    } catch (Exception e) {
+                        error "Docker build failed: ${e.getMessage()}"
+                    }
                 }
             }
         }
+
         stage('Manual Approval') {
             steps {
                 timeout(time: 5, unit: 'MINUTES') {
@@ -92,28 +136,40 @@ pipeline {
                 }
             }
         }
+
         stage('Deploy') {
             steps {
                 script {
-                    docker.image("${DOCKER_IMAGE}:${DOCKER_TAG}").run('-p 8081:8080')
+                    try {
+                        docker.image("${DOCKER_IMAGE}:${DOCKER_TAG}").run('-p 8081:8080')
+                    } catch (Exception e) {
+                        error "Deployment failed: ${e.getMessage()}"
+                    }
                 }
             }
         }
     }
+
     post {
         always {
-            cleanWs()
-            emailext (
-                subject: "Pipeline Status: ${currentBuild.result}",
-                body: """
-                    Pipeline Status: ${currentBuild.result}
-                    Job: ${env.JOB_NAME}
-                    Build Number: ${env.BUILD_NUMBER}
-                    Build URL: ${env.BUILD_URL}
-                """,
-                to: 'your-email@example.com',
-                attachLog: true
-            )
+            script {
+                try {
+                    deleteDir()
+                    emailext (
+                        subject: "Pipeline Status: ${currentBuild.result}",
+                        body: """
+                            Pipeline Status: ${currentBuild.result}
+                            Job: ${env.JOB_NAME}
+                            Build Number: ${env.BUILD_NUMBER}
+                            Build URL: ${env.BUILD_URL}
+                        """,
+                        to: 'ayoubbly41@gmail.com',
+                        attachLog: true
+                    )
+                } catch (Exception e) {
+                    echo "Post-build actions failed: ${e.getMessage()}"
+                }
+            }
         }
         success {
             echo 'Pipeline executed successfully!'
