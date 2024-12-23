@@ -20,7 +20,7 @@ spring:
 
 
   elasticsearch:
-    uris: ${ELASTICSEARCH_URI:localhost:9200}
+    uris: host.docker.internal:9200
     connection-timeout: 5s
     socket-timeout: 30s
     username:
